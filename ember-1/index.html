@@ -18,7 +18,7 @@
 			<div class="navbar-collapse">
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="javascript:;">Useful Links</a></li>
-					<li><a href="http://emberjs.com/guides/getting-started/displaying-a-models-completeness/">Current Position in Tutorial</a></li>
+					<li><a href="http://emberjs.com/guides/getting-started/display-a-button-to-remove-completed-todos/" target="_blank">Current Position in Tutorial</a></li>
 				</ul>
 			</div>
 		</div>
@@ -40,31 +40,23 @@
 		</header>
 
 		<section id="main">
-			<ul id="todo-list">
-				{{#each todo in model}}
-					<li {{bind-attr class="todo.isCompleted:completed"}}>
-						<input type="checkbox" class="toggle">
-						<label>{{todo.title}}</label><button class="destroy"></button>
-					</li>
-				{{/each}}
-			</ul>
-
+			{{outlet}}
 			<input type="checkbox" id="toggle-all">
 		</section>
 
 		<footer id="footer">
 			<span id="todo-count">
-				<strong>2</strong> todos left
+				<strong>{{remaining}}</strong> {{inflection}} left
 			</span>
 			<ul id="filters">
 				<li>
-					<a href="all" class="selected">All</a>
+					{{#link-to "todos.index" activeClass="selected"}}All{{/link-to}}
 				</li>
 				<li>
-					<a href="active">Active</a>
+					{{#link-to "todos.active" activeClass="selected"}}Active{{/link-to}}
 				</li>
 				<li>
-					<a href="completed">Completed</a>
+					{{#link-to "todos.completed" activeClass="selected"}}Completed{{/link-to}}
 				</li>
 			</ul>
 
@@ -78,6 +70,22 @@
 		<p>Double-click to edit a todo</p>
 	</footer>
 	</script>
+
+	<script type="text/x-handlebars" data-template-name="todos/index">
+		<ul id="todo-list">
+			{{#each todo in model itemController="todo"}}
+				<li {{bind-attr class="todo.isCompleted:completed todo.isEditing:editing"}}>
+					{{#if todo.isEditing}}
+						{{edit-todo class="edit" value=todo.title focus-out="acceptChanges" insert-newline="acceptChanges"}}
+					{{else}}
+						{{input type="checkbox" checked=todo.isCompleted class="toggle"}}
+						<label {{action "editTodo" on="doubleClick"}}>{{todo.title}}</label>
+						<button class="destroy" {{action "removeTodo"}}></button>
+					{{/if}}
+				</li>
+			{{/each}}
+		</ul>
+	</script>
 <script src="js/libs/jquery-1.11.1.min.js"></script>
 <script src="js/libs/handlebars-v1.3.0.js"></script>
 <script src="js/libs/ember.js"></script>
@@ -86,5 +94,7 @@
 <script src="js/router.js"></script>
 <script src="js/models/todo.js"></script>
 <script src="js/controllers/todos_controller.js"></script>
+<script src="js/controllers/todo_controller.js"></script>
+<script src="js/views/edit_todo_view.js"></script>
 </body>
 </html>
